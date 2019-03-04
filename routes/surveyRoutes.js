@@ -1,3 +1,6 @@
+const _ = require('lodash')
+const Path = require('path-parser').default
+const { URL } = require('url')
 const mongoose = require('mongoose')
 const requireLogin = require('../middlewares/requireLogin')
 const requireCredits = require('../middlewares/requireCredits')
@@ -36,7 +39,27 @@ module.exports = (app) => {
   })
 
   app.post('/api/surveys/webhooks', (req, res) => {
+    console.log("HELLO")
     console.log(req.body)
+    const p = new Path('/api/surveys/:surveyId/:choice')
+
+    const events = _.chain(req.body)
+      .filter(({ event }) => {
+          return event === "click"
+      })
+      .map(({ email, url }) => {
+        const match = p.test(new URL(url).pathname)
+        if (match) { return { email, ...match } }
+      })
+      .compact()
+      .uniqWith((a, b) => {
+       return a.email === b.email && a.surveyId === b.surveyId
+      })
+      .value()
+
+    console.log("\n")
+    console.log(events)
+    console.log("GOODBYE")
     res.send({})
   })
 }
