@@ -10,7 +10,7 @@ const surveyTemplate = require('../services/emailTemplates/surveyTemplate')
 const Survey = mongoose.model('surveys')
 
 module.exports = (app) => {
-  app.get('/api/surveys/thanks', (req, res) => {
+  app.get('/api/surveys/thanks/:surveyId/:choice', (req, res) => {
       res.send('Thanks for voting!')
   })
 
@@ -41,7 +41,7 @@ module.exports = (app) => {
   app.post('/api/surveys/webhooks', (req, res) => {
     console.log("HELLO")
     console.log(req.body)
-    const p = new Path('/api/surveys/:surveyId/:choice')
+    const p = new Path('/api/surveys/thanks/:surveyId/:choice')
 
     _.chain(req.body)
       .filter(({ event }) => {
