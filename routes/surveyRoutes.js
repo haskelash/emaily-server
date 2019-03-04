@@ -39,8 +39,6 @@ module.exports = (app) => {
   })
 
   app.post('/api/surveys/webhooks', (req, res) => {
-    console.log("HELLO")
-    console.log(req.body)
     const p = new Path('/api/surveys/thanks/:surveyId/:choice')
 
     _.chain(req.body)
@@ -69,8 +67,6 @@ module.exports = (app) => {
       })
       .value()
 
-
-    console.log("GOODBYE")
     res.send({})
   })
 }
