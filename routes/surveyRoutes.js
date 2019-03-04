@@ -43,7 +43,7 @@ module.exports = (app) => {
     console.log(req.body)
     const p = new Path('/api/surveys/:surveyId/:choice')
 
-    const events = _.chain(req.body)
+    _.chain(req.body)
       .filter(({ event }) => {
           return event === "click"
       })
@@ -55,10 +55,20 @@ module.exports = (app) => {
       .uniqWith((a, b) => {
        return a.email === b.email && a.surveyId === b.surveyId
       })
+      .each(({ surveyId, email, choice }) => {
+        Survey.updateOne({
+          _id: surveyId,
+          recipients: {
+            $elemMatch: { email, responded: false }
+          }
+        }, {
+          $inc: { [choice]: 1 },
+          $set: { 'recipients.$.responded': true }
+        }).exec()
+      })
       .value()
 
-    console.log("\n")
-    console.log(events)
+
     console.log("GOODBYE")
     res.send({})
   })
